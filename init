@@ -1,0 +1,39 @@
+apt-get update && apt-get upgrade && apt-get dist-upgrade
+
+add-apt-repository ppa:pulse-eight/libcec
+add-apt-repository ppa:plexapp/plexht
+
+apt-get update && apt-get upgrade && apt-get dist-upgrade
+
+apt-get install i965-va-driver intel-gpu-tools libva-drm1 libva-egl1 libva-intel-vaapi-driver libva-tpi1 libva-wayland1 vainfo plexhometheater
+
+cp /etc/fstab{,.save}
+sed -i 's/errors=remount-ro/errors=remount-ro,discard/g' /etc/fstab
+
+apt-get remove pulseaudio
+
+** without root
+mkdir -p ~/.config/autostart/
+cat << EOF > ~/.config/autostart/plex.desktop
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.9.4
+Type=Application
+Name=Plex Home Theater
+Comment=Starts Plex Home Theater automatically
+Exec=plexhometheater.sh
+StartupNotify=false
+Terminal=false
+Hidden=false
+EOF
+**
+
+mkdir -p /etc/X11/xorg.conf.d
+cat << EOF > /etc/X11/xorg.conf.d/20-intel.conf
+Section "Device"
+Identifier "Intel Graphics"
+Option "SwapbuffersWait" "true"
+Option "AccelMethod" "sna"
+Option "TearFree" "true"
+EndSection
+EOF
